@@ -50,6 +50,8 @@ if __name__ == "__main__" :
         status.update_message(current_message)
     else:
         # If no new message ...
+        # ... send debug notif
+        # notif.send_message(message="Pas de nouveau rendez-vous", url=url, url_title="Voir le site")
         # ... update last check time locally
         status.update_check()
 
