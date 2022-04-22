@@ -1,6 +1,6 @@
-# Twistair rendezvous notifications with Pushover
+# Twist'air rendezvous notifications with Pushover
 
-[twstr-rdv](https://github.com/jonathanmichel/twstr-rdv) is a Python script that parses the [Twistair](https://twistair.ch/ecole-parapente/62-rendez-vous) website page that indicates rendezvous for flying. If a new rendezvous is published, a notification is sent through [Pushover](https://pushover.net/).
+[twstr-rdv](https://github.com/jonathanmichel/twstr-rdv) is a Python script that parses the [Twist'air](https://twistair.ch/ecole-parapente/62-rendez-vous) website page that indicates rendezvous for flying. If a new rendezvous is published, a notification is sent through [Pushover](https://pushover.net/).
 
 ![image](https://user-images.githubusercontent.com/24658882/164752869-ad16abd5-ff8c-4f15-8fac-2f19d7ac300c.png)
 
