@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "twstr-rdv"
+version = "0.1.0"
+description = "Send Pushover notification when new RDV published on Twistair"
+authors = ["Jonathan Michel <jonathanmichel@hopitalvs.ch>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+PyYAML = "^6.0"
+beautifulsoup4 = "^4.11.1"
+
+[tool.poetry.dev-dependencies]
+jupyter = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
