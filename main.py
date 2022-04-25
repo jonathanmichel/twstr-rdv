@@ -1,11 +1,12 @@
 import json
 import logging
-from pprint import pprint
 from time import sleep
+from pprint import pprint
+from datetime import datetime
 
-from pushover import Pushover
-from twstr_rdv import TwstrRdv
 from status import Status
+from pushover import Pushover
+from twstr_parser import TwstrParser
 from telegram_bot import TelegramBot
 
 
@@ -17,24 +18,36 @@ if __name__ == "__main__" :
     with open(r'credentials.json') as file:
         credentials = json.load(file)
 
+    rendezvous_url = ""
+
+    notif = Pushover(
+        token=credentials["pushover_token"],
+        user=credentials["pushover_user"]
+    )
+
+    twstr = TwstrParser(
+        base_url="https://twistair.ch/ecole-parapente/", 
+        path_rendez_vous="62-rendez-vous",
+        path_meteo="55-meteo-de-tonio-a-vercorin"
+    )
+
+    status = Status("status.json")
+
     telegram = TelegramBot(credentials["telegram_token"])
 
-    telegram.start_polling()
+    # telegram.start_polling()
+
+    meteo = twstr.get_forecast(3)
+       
+    message = twstr.format_meteo(meteo)
+    print(message)
+
+    telegram.broadcast_message(message)
 
     exit()
 
     while True:
         sleep(15)
-        url = "https://twistair.ch/ecole-parapente/62-rendez-vous"
-
-        notif = Pushover(
-            token=credentials["pushover_token"],
-            user=credentials["pushover_user"]
-        )
-
-        twstr = TwstrRdv(url)
-
-        status = Status("status.json")
 
         # Get last saved messages locally
         saved_message = status.get_saved_message()
@@ -56,7 +69,7 @@ if __name__ == "__main__" :
         if current_message != saved_message:
             # If different ...
             # ... send notification
-            broadcast_message(f"Nouveau rendez-vous\n{current_message}")
+            telegram.broadcast_message(f"Nouveau rendez-vous\n{current_message}")
             # ... update local save
             pprint(status.update_message(current_message))
         else:
