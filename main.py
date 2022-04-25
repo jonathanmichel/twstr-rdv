@@ -49,7 +49,7 @@ if __name__ == "__main__" :
             if current_rendezvous != saved_rendezvous:
                 # If different ...
                 # ... send notification
-                telegram.broadcast_message(f"Nouveau rendez-vous\n{current_rendezvous}")
+                telegram.broadcast_message(f"📅 <u>Nouveau rendez-vous</u>\n\n{current_rendezvous}")
                 # ... update local save
                 status.update_rendezvous(current_rendezvous)
         else:
@@ -86,4 +86,4 @@ if __name__ == "__main__" :
         log.info("Check done")
 
         # Try next time
-        sleep(5)
+        sleep(15)
