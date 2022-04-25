@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 
 from pushover import Pushover
 from twstr_rdv import TwstrRdv
@@ -46,14 +47,12 @@ if __name__ == "__main__" :
             url=url,
             url_title="Voir le rendez-vous"
         )
-        # ... update local save 
-        status.update_message(current_message)
+        # ... update local save
+        pprint(status.update_message(current_message))
     else:
         # If no new message ...
         # ... send debug notif
         # notif.send_message(message="Pas de nouveau rendez-vous", url=url, url_title="Voir le site")
         # ... update last check time locally
-        status.update_check()
-
-
+        pprint(status.update_check())
 

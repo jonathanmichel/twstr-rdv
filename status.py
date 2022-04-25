@@ -13,7 +13,7 @@ class Status:
 
     def get_datetime(self):
         return datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    
+
     def get_status(self):
         """
         Get status from file and create it if not valid/existing
@@ -43,6 +43,7 @@ class Status:
         """
         with open(self.status_file, "w") as file:
             json.dump(status, file)
+            return status
 
     def get_saved_message(self):
         """
@@ -60,7 +61,7 @@ class Status:
             "last_udpate": self.get_datetime(),
         }
 
-        self.set_status(status)
+        return self.set_status(status)
 
     def update_check(self):
         """
@@ -68,7 +69,7 @@ class Status:
         """
         status = self.get_status()
         status["last_check"] = self.get_datetime()
-        self.set_status(status)
+        return self.set_status(status)
 
 
 
