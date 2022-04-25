@@ -81,7 +81,7 @@ class TwstrParser:
 
         date_title = section.split("·")
 
-        date_time = dateparser.parse(date_title[0]).date()
+        date_time = dateparser.parse(date_title[0]).date().strftime("%d/%m/%Y")
 
         return {
             "date": date_time,
@@ -119,7 +119,7 @@ class TwstrParser:
             weather_emojis += self.emoji_converter(emojis, ic) + " "
 
         message = f"""
-<u>Météo de Tonio du {meteo["date"].strftime("%d/%m/%Y")}</u> {weather_emojis}{meteo["title"]}
+<u>Météo de Tonio du {meteo["date"]}</u> {weather_emojis}{meteo["title"]}
 \n{meteo["situation"]}\n
 """
         emojis = [

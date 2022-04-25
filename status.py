@@ -20,8 +20,12 @@ class Status:
         """
         default_status = {
             "last_check": "",
-            "last_udpate": "",
-            "message": "",
+            "last_forecast_udpate": "",
+            "last_rendezvous_udpate": "",
+            "rendezvous": "",
+            "forecast": {
+                "section": ""
+            }
         }
 
         try:
@@ -29,9 +33,11 @@ class Status:
                 status = json.load(file)
         except FileNotFoundError as e:
             status = {}
+        except json.JSONDecodeError as e:
+            status = {}
 
         # If status file is empty or no not exist
-        if status == {}:
+        if status == {} or status == "":
             self.set_status(default_status)
             status = default_status
 
@@ -45,32 +51,51 @@ class Status:
             json.dump(status, file)
             return status
 
-    def get_saved_message(self):
+    def get_saved_rendezvous(self):
         """
-        Get message from the local status file
+        Get rendezvous from the local status file
         """
-        return self.get_status()["message"]
+        return self.get_status()["rendezvous"]
 
-    def update_message(self, new_message):
+    def get_saved_forecast(self):
         """
-        Update local file with new message
+        Get forecast section from the local status file
         """
-        status = {
-            "last_check": self.get_datetime(),
-            "message": new_message,
-            "last_udpate": self.get_datetime(),
-        }
+        return self.get_status()["forecast"]["section"]
+
+    def update_status(self, **kwargs):
+        """
+        Update local status file with new datas
+        """
+        status = self.get_status()
+
+        for key, value in kwargs.items():
+            status[key] = value
 
         return self.set_status(status)
 
+    def update_rendezvous(self, new_rendezvous):
+        """
+        Update local file with new rendez_vous
+        """
+        return self.update_status(
+            last_rendezvous_udpate=self.get_datetime(),
+            rendezvous=new_rendezvous,
+        )
+
+    def update_forecast(self, forecast):
+        """
+        Update local file with new forecast
+        """
+        return self.update_status(
+            last_forecast_udpate=self.get_datetime(),
+            forecast=forecast,
+        )
+    
     def update_check(self):
         """
         Update local file with new check time
         """
-        status = self.get_status()
-        status["last_check"] = self.get_datetime()
-        return self.set_status(status)
-
-
-
-
+        return self.update_status(
+            last_check=self.get_datetime(),
+        )
