@@ -3,45 +3,11 @@ import logging
 from pprint import pprint
 from time import sleep
 
-from telegram.bot import Bot
-from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters
-from telegram import InlineQueryResultArticle, InputTextMessageContent
-from telegram.ext import InlineQueryHandler
-from telegram.update import Update
-
 from pushover import Pushover
 from twstr_rdv import TwstrRdv
 from status import Status
+from telegram_bot import TelegramBot
 
-users_list = set()
-groups_list = set()
-
-def start(update: Update, context: CallbackContext):
-    chat_id = update.effective_chat.id
-    context.bot.send_message(chat_id=chat_id, text="Hey c'est Twist'Hervé ! Bon vol 🪂")
-    if chat_id > 0:
-        users_list.add(chat_id)
-        context.bot.send_message(chat_id=chat_id, text=f"Utilisateur {chat_id} ajouté à la liste de diffusion")
-    else:
-        groups_list.add(chat_id)
-        context.bot.send_message(chat_id=chat_id, text=f"Groupe {chat_id} ajouté à la liste de diffusion")
-
-def debug(update: Update, context: CallbackContext):
-    debug = {
-        "version": 0.1,
-        "chat_id": update.effective_chat.id
-    }
-    context.bot.send_message(chat_id=update.effective_chat.id, text=debug)
-
-def broadcast(update: Update, context: CallbackContext):
-    broadcast_message("Salut")
-
-def broadcast_message(message):
-    for u in users_list:
-        bot.send_message(chat_id=u, text=message)
-
-    for g in groups_list:
-        bot.send_message(chat_id=g, text=message)
 
 if __name__ == "__main__" :
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -51,21 +17,11 @@ if __name__ == "__main__" :
     with open(r'credentials.json') as file:
         credentials = json.load(file)
 
-    updater = Updater(credentials["telegram_token"], use_context=True)
-    dispatcher = updater.dispatcher
+    telegram = TelegramBot(credentials["telegram_token"])
 
-    start_handler = CommandHandler('start', start)
-    dispatcher.add_handler(start_handler)
+    telegram.start_polling()
 
-    debug_handler = CommandHandler('debug', debug)
-    dispatcher.add_handler(debug_handler)
-
-    broadcast_handler = CommandHandler('broadcast', broadcast)
-    dispatcher.add_handler(broadcast_handler)
-
-    bot = Bot(token=credentials["telegram_token"])
-
-    updater.start_polling()
+    exit()
 
     while True:
         sleep(15)
