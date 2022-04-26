@@ -5,7 +5,7 @@ from time import sleep
 from status import Status
 from pushover import Pushover
 from twstr_parser import TwstrParser
-from telegram_bot import TelegramBot
+from telegram_bot import TwstrTelegramBot
 from healthchecks import Healthchecks
 
 if __name__ == "__main__" :
@@ -19,7 +19,7 @@ if __name__ == "__main__" :
 
     healthchecks = Healthchecks(credentials["healthchecks_uuid"])
     
-    notif = Pushover(
+    pushover = Pushover(
         token=credentials["pushover_token"],
         user=credentials["pushover_user"]
     )
@@ -32,8 +32,11 @@ if __name__ == "__main__" :
 
     status = Status("status.json")
 
-    telegram = TelegramBot(
-        credentials["telegram_token"], credentials["telegram_subscribers"]
+    telegram = TwstrTelegramBot(
+        credentials["telegram_token"], 
+        status,
+        twstr,
+        credentials["telegram_dev_ids"]
     )
 
     telegram.start_polling()
@@ -53,18 +56,20 @@ if __name__ == "__main__" :
             if current_rendezvous != saved_rendezvous:
                 # If different ...
                 # ... send notification
-                telegram.broadcast_message(f"📅 <u>Nouveau rendez-vous</u>\n\n{current_rendezvous}")
+                telegram.broadcast_message(
+                    twstr.format_rendezvous(current_rendezvous), disable_web_page_preview=True
+                )
                 # ... update local save
                 status.update_rendezvous(current_rendezvous)
         else:
             log.error("Unable to get rendez-vous")
-            notif.send_message(
+            pushover.send_message(
                 title="Impossible de récupérer le rendez-vous",
                 message="Format de page inconnu"
             )
 
         # Get last saved messages locally
-        saved_forecast = status.get_saved_forecast()
+        saved_forecast = status.get_saved_forecast()["section"]
 
         # Get last weather forecast on the website
         current_forecast = twstr.get_forecast(0)
@@ -75,12 +80,14 @@ if __name__ == "__main__" :
             if current_forecast["section"] != saved_forecast:
                 # If different ...
                 # ... send notification
-                telegram.broadcast_message(twstr.format_meteo(current_forecast))
+                telegram.broadcast_message(
+                    twstr.format_meteo(current_forecast), disable_web_page_preview=True
+                )
                 # ... update local save
                 status.update_forecast(current_forecast)
         else:
             log.error("Unable to get forecast")
-            notif.send_message(
+            pushover.send_message(
                 title="Impossible de récupérer la météo de Tonio",
                 message="Format de page inconnu",
             )
@@ -92,4 +99,4 @@ if __name__ == "__main__" :
         healthchecks.success()
 
         # Try next time
-        sleep(60 * 60)
+        sleep(5) # 60 * 60)

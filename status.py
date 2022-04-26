@@ -61,7 +61,7 @@ class Status:
         """
         Get forecast section from the local status file
         """
-        return self.get_status()["forecast"]["section"]
+        return self.get_status()["forecast"]
 
     def update_status(self, **kwargs):
         """

@@ -106,7 +106,15 @@ class TwstrParser:
 
         return forecasts
 
+    def format_rendezvous(self, rendezvous):
+        message = f"📅  <u>Nouveau rendez-vous</u>\n\n{rendezvous}\n" \
+            f"<a href='{self.base_url + self.path_rendez_vous}'>🔗 Voir sur le site</a>"
+        
+        return message
+
     def format_meteo(self, meteo):
+        # @todo Check meteo format !
+        
         emojis = [
             [ "Sunny-128-2510f9e2f167b9304bcebecc7a54d5f3e2ff8b863de8bf0c48a954ec1c5e6c8d.png", "☀️" ],
             [ "Sunny-Period-128-b89aa66c7d6863bb2572d95a5bfc664bd59897681b5c2d8b45026241bc3fb239.png", "🌤" ],
@@ -115,8 +123,9 @@ class TwstrParser:
         ]
 
         weather_emojis = ""
-        for ic in meteo["icons"]:
-            weather_emojis += self.emoji_converter(emojis, ic) + " "
+        if "icons" in meteo:
+            for ic in meteo["icons"]:
+                weather_emojis += self.emoji_converter(emojis, ic) + " "
 
         message = f"""
 <u>Météo de Tonio du {meteo["date"]}</u> {weather_emojis}{meteo["title"]}
