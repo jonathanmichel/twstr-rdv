@@ -18,14 +18,14 @@ if __name__ == "__main__" :
         credentials = json.load(file)
 
     healthchecks = Healthchecks(credentials["healthchecks_uuid"])
-    
+
     pushover = Pushover(
         token=credentials["pushover_token"],
         user=credentials["pushover_user"]
     )
 
     twstr = TwstrParser(
-        base_url="https://twistair.ch/ecole-parapente/", 
+        base_url="https://twistair.ch/ecole-parapente/",
         path_rendez_vous="62-rendez-vous",
         path_meteo="55-meteo-de-tonio-a-vercorin"
     )
@@ -33,7 +33,7 @@ if __name__ == "__main__" :
     status = Status("status.json")
 
     telegram = TwstrTelegramBot(
-        credentials["telegram_token"], 
+        credentials["telegram_token"],
         status,
         twstr,
         credentials["telegram_dev_ids"]
@@ -94,9 +94,8 @@ if __name__ == "__main__" :
 
         # Update check datetime
         status.update_check()
-        log.info("Check done")
 
         healthchecks.success()
 
         # Try next time
-        sleep(5) # 60 * 60)
+        sleep(15 * 60) # 15 minutes
