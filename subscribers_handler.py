@@ -1,7 +1,7 @@
 
 class SubscribersHandler:
-    def __init__(self) -> None:
-        self.subscribers = set([648038516])
+    def __init__(self, subscribers=[]) -> None:
+        self.subscribers = set(subscribers)
 
     def add(self, id):
         self.subscribers.add(id)

@@ -6,7 +6,7 @@ from status import Status
 from pushover import Pushover
 from twstr_parser import TwstrParser
 from telegram_bot import TelegramBot
-
+from healthchecks import Healthchecks
 
 if __name__ == "__main__" :
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -17,8 +17,8 @@ if __name__ == "__main__" :
     with open(r'credentials.json') as file:
         credentials = json.load(file)
 
-    rendezvous_url = ""
-
+    healthchecks = Healthchecks(credentials["healthchecks_uuid"])
+    
     notif = Pushover(
         token=credentials["pushover_token"],
         user=credentials["pushover_user"]
@@ -32,11 +32,15 @@ if __name__ == "__main__" :
 
     status = Status("status.json")
 
-    telegram = TelegramBot(credentials["telegram_token"])
+    telegram = TelegramBot(
+        credentials["telegram_token"], credentials["telegram_subscribers"]
+    )
 
     telegram.start_polling()
 
     while True:
+        healthchecks.start()
+
         # Get last saved messages locally
         saved_rendezvous = status.get_saved_rendezvous()
 
@@ -85,5 +89,7 @@ if __name__ == "__main__" :
         status.update_check()
         log.info("Check done")
 
+        healthchecks.success()
+
         # Try next time
-        sleep(15)
+        sleep(60 * 60)

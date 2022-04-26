@@ -12,19 +12,17 @@ log = logging.getLogger()
 
 
 class TelegramBot:
-    def __init__(self, token):
+    def __init__(self, token, subscribers=[]):
         self.updater = Updater(token, use_context=True)
         self.dispatcher = self.updater.dispatcher
 
         self.bot = Bot(token=token)
 
-        self.subscribers = SubscribersHandler()
+        self.subscribers = SubscribersHandler(subscribers)
 
-        start_handler = CommandHandler("start", 
+        self.dispatcher.add_handler(CommandHandler("start", 
             lambda bot, update: self.start_command_handler(bot, update)
-        )
-
-        self.dispatcher.add_handler(start_handler)
+        ))
 
     def start_polling(self):
         self.updater.start_polling()
