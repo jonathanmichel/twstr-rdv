@@ -1,0 +1,12 @@
+# Move that file to /etc/systemd/system/twstr.service
+[Unit]
+Description=TwistAir bot
+
+[Service]
+User=jonathan
+WorkingDirectory=/home/jonathan/cronjobs/twstr-rdv
+ExecStart=/bin/bash -c 'source .venv/bin/activate && python main.py'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
