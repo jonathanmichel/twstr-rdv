@@ -56,9 +56,13 @@ if __name__ == "__main__" :
             if current_rendezvous != saved_rendezvous:
                 # If different ...
                 # ... send notification
-                telegram.broadcast_message(
-                    twstr.format_rendezvous(current_rendezvous), disable_web_page_preview=True
-                )
+                formated = twstr.format_rendezvous(current_rendezvous, True)
+                if formated is None:
+                    telegram.send_to_dev("Nouveau rendez-vous publié mais pour une date incorrecte")
+                else:
+                    telegram.broadcast_message(
+                        formated, disable_web_page_preview=True
+                    )
                 # ... update local save
                 status.update_rendezvous(current_rendezvous)
         else:
@@ -80,9 +84,12 @@ if __name__ == "__main__" :
             if current_forecast["section"] != saved_forecast:
                 # If different ...
                 # ... send notification
-                telegram.broadcast_message(
-                    twstr.format_meteo(current_forecast), disable_web_page_preview=True
-                )
+                if formated is None:
+                    telegram.send_to_dev("Nouvelle météo publiée mais pour une date incorrecte")
+                else:
+                    telegram.broadcast_message(
+                        formated, disable_web_page_preview=True
+                    )
                 # ... update local save
                 status.update_forecast(current_forecast)
         else:

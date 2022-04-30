@@ -59,6 +59,9 @@ class TwstrTelegramBot:
             except error.Unauthorized as e:
                 log.warning(f"chat_id: {sub} - {e}")
 
+    def send_to_dev(self, message, **kwargs):
+        self.bot.send_message(chat_id=self.dev_id, text=message, parse_mode=ParseMode.HTML, **kwargs)
+
     def error_handler(self, update: object, context: CallbackContext) -> None:
         """Log the error and send a telegram message to notify the developer."""
         # Log the error before we do anything else, so we can see it even if something breaks.
@@ -81,12 +84,19 @@ class TwstrTelegramBot:
             f'<pre>{html.escape(tb_string)}</pre>'
         )
 
-        context.bot.send_message(chat_id=self.dev_id, text=message, parse_mode=ParseMode.HTML)
+        self.send_to_dev(message)
 
     def start_command_handler(self, update: Update, context: CallbackContext):
         chat_id = update.effective_chat.id
 
-        context.bot.send_message(chat_id=chat_id, text="Hey c'est Twist'Hervé ! Bon vol 🪂")
+
+        if chat_id > 0:
+            context.bot.send_message(chat_id=chat_id, text=f"Hey {update.effective_chat.first_name}, c'est Twist'Hervé! Bon vol 🪂")
+            self.send_to_dev(f"User {update.effective_chat.first_name} (@{update.effective_chat.username}, #{update.effective_chat.id}) added to diffusion list")
+        else:
+            context.bot.send_message(chat_id=chat_id, text=f"Hey c'est Twist'Hervé! Merci {update.effective_user.first_name} de m'avoir ajouté au groupe. Bon vol 🪂")
+            self.send_to_dev(f"Group {update.effective_chat.title} #{update.effective_chat.id} added to diffusion list by {update.effective_user.first_name} (@{update.effective_user.username}, #{update.effective_user.id})")
+
         self.subscribers.add(chat_id)
 
     def forecast_command_handler(self, update: Update, context: CallbackContext):
