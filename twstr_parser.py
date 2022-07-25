@@ -136,7 +136,7 @@ class TwstrParser:
             message += "❗Mise a jour "
 
         check_date = self.check_date(rendezvous["date"])
-
+        
         if check_date == self.DateCheck.NO_TOMORROW:
             if new: # Rendezvous is supposed to be new but date does not correspond
                 return None

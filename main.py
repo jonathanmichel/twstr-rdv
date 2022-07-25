@@ -58,7 +58,8 @@ if __name__ == "__main__" :
                 # ... send notification
                 formated = twstr.format_rendezvous(current_rendezvous, True)
                 if formated is None:
-                    telegram.send_to_dev("Nouveau rendez-vous publié mais pour une date incorrecte")
+                    telegram.send_to_dev("Rendez-vous mis à jour mais pour une date incorrecte")
+                    telegram.send_to_dev(current_rendezvous)
                 else:
                     telegram.broadcast_message(
                         formated, disable_web_page_preview=True

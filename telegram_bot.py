@@ -30,6 +30,9 @@ class TwstrTelegramBot:
 
         self.subscribers = SubscribersHandler([dev_id])
 
+        # Add "Les parapenteur" group in diffusion list
+        self.subscribers.add(-654440852)
+
         # Add error handler
         self.dispatcher.add_error_handler(self.error_handler)
 
@@ -60,6 +63,7 @@ class TwstrTelegramBot:
                 log.warning(f"chat_id: {sub} - {e}")
 
     def send_to_dev(self, message, **kwargs):
+        message = "🤖 DEBUG\n{}".format(message)
         self.bot.send_message(chat_id=self.dev_id, text=message, parse_mode=ParseMode.HTML, **kwargs)
 
     def error_handler(self, update: object, context: CallbackContext) -> None:
