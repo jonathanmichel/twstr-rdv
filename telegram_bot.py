@@ -21,7 +21,7 @@ class TwstrTelegramBot:
     def __init__(self, token, status: Status, twstr: TwstrParser, dev_id=""):
         self.updater = Updater(token, use_context=True)
         self.dispatcher = self.updater.dispatcher
-        self.dispatcher.error_handlers 
+        self.dispatcher.error_handlers
         self.status = status
         self.twstr = twstr
         self.dev_id = dev_id
@@ -31,7 +31,7 @@ class TwstrTelegramBot:
         self.subscribers = SubscribersHandler([dev_id])
 
         # Add "Les parapenteur" group in diffusion list
-        self.subscribers.add(-654440852)
+        # self.subscribers.add(-654440852)
 
         # Add error handler
         self.dispatcher.add_error_handler(self.error_handler)
