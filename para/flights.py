@@ -6,17 +6,16 @@ class Flights:
     def __init__(self) -> None:
         pass
 
-    def getAllFlightsForPilot(self, pilotId):
-        events = self.getAllEventsForPilot(pilotId)
+    def getAllFlightsForPilot(pilotId):
+        events = Flights.getAllEventsForPilot(pilotId)
         for event in events:
-            locations = Locations()
-            loc = locations.get(event["locationId"])
+            loc = Locations.get(event["locationId"])
             
             dt = datetime.fromtimestamp(event["timestamp"])
 
             print(f"{loc['type']} at {loc['name']} on {dt} - {event['notes']}" )
 
-    def getAllEventsForPilot(self, pilotId):
+    def getAllEventsForPilot(pilotId):
         ref = db.reference("events")
         events = ref.get()
         flights = []

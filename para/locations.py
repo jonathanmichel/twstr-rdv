@@ -10,7 +10,7 @@ class Locations:
     def __init__(self) -> None:
         pass
         
-    def create(self, name, latitude, longitude, radius, type: LocationType, description=""):
+    def create(name, latitude, longitude, radius, type: LocationType, description=""):
         locations_ref = db.reference('locations')
 
         new_location_ref = locations_ref.push({
@@ -24,7 +24,7 @@ class Locations:
 
         return new_location_ref.key
 
-    def get(self, id):
+    def get(id):
         ref = db.reference("locations")
         locations = ref.get()
         for key, value in locations.items():
@@ -33,7 +33,7 @@ class Locations:
                 return value
         return None
     
-    def update(self, id, data={}):
+    def update(id, data={}):
         ref = db.reference("locations")
         locations = ref.get()
         for key, value in locations.items():
@@ -42,7 +42,7 @@ class Locations:
                 return True
         return False
 
-    def delete(self, id):      
+    def delete(id):      
         ref = db.reference("locations")
         locations = ref.get()
         for key, value in locations.items():
@@ -51,7 +51,7 @@ class Locations:
                 return True
         return False
     
-    def get_byName(self, name):
+    def get_byName(name):
         ref = db.reference("locations")
         locations = ref.get()
         for key, value in locations.items():
@@ -60,7 +60,7 @@ class Locations:
                 return value
         return None
     
-    def update_byName(self, name, data={}):
+    def update_byName(name, data={}):
         ref = db.reference("locations")
         locations = ref.get()
         for key, value in locations.items():
@@ -69,7 +69,7 @@ class Locations:
                 return True
         return False
 
-    def delete_byName(self, name):
+    def delete_byName(name):
         ref = db.reference("locations")
         locations = ref.get()
         for key, value in locations.items():
@@ -78,7 +78,7 @@ class Locations:
                 return True
         return False
     
-    def get_byCoordinates(self, latitude, longitude):
+    def get_byCoordinates(latitude, longitude):
         ref = db.reference("locations")
         locations = ref.get()
         for key, value in locations.items():
@@ -87,7 +87,7 @@ class Locations:
                 return value
         return None
     
-    def getDistanceBetweenTwoGPSPoints(self, coords_1, coords_2):
+    def getDistanceBetweenTwoGPSPoints(coords_1, coords_2):
         distance = geopy.distance.geodesic(coords_1, coords_2).meters
 
         return distance

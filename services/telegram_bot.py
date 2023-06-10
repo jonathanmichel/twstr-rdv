@@ -13,6 +13,7 @@ from twstr import Status
 from twstr import TwstrParser
 from twstr import SubscribersHandler
 
+from para import Pilots, Locations, Flights, FlightEvents
 
 log = logging.getLogger()
 
@@ -39,9 +40,10 @@ class TwstrTelegramBot:
         # Available commands
         # ("command", handler, "description")
         commands = [
-            ("start", self.start_command_handler, "S'abonner aux notifications"),
+            ("start", self.start_command_handler, "S'enregistrer en tant que pilote"),
             ("rendezvous", self.rendezvous_command_handler, "Afficher le dernier rendez-vous"),
-            ("forecast", self.forecast_command_handler, "Afficher la dernière météo d'Antoine")
+            ("forecast", self.forecast_command_handler, "Afficher la dernière météo d'Antoine"),
+            ("addFlightEvent", self.addFlightEvent_command_handler, "Ajouter un événement de vol")
         ]
 
         # Generate help commands list and add commands handlers
@@ -120,6 +122,10 @@ class TwstrTelegramBot:
             chat_id=chat_id, text=self.twstr.format_rendezvous(rendezvous),
             parse_mode=ParseMode.HTML, disable_web_page_preview=True
         )
+
+
+    def addFlightEvent_command_handler(self, update: Update, context: CallbackContext):
+        pass
 
 
 

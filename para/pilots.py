@@ -4,7 +4,7 @@ class Pilots:
     def __init__(self) -> None:
         pass
         
-    def create(self, telegramId, firstName, lastName):
+    def create(telegramId, firstName, lastName):
         pilots_ref = db.reference('pilots')
 
         pilots_ref.child(str(telegramId)).set({
@@ -14,7 +14,7 @@ class Pilots:
 
         return telegramId
 
-    def get(self, id):
+    def get(id):
         ref = db.reference("pilots")
         pilots = ref.get()
         for key, value in pilots.items():
@@ -23,7 +23,7 @@ class Pilots:
                 return value
         return None
     
-    def update(self, id, data={}):
+    def update(id, data={}):
         ref = db.reference("pilots")
         pilots = ref.get()
         for key, value in pilots.items():
@@ -32,7 +32,7 @@ class Pilots:
                 return True
         return False
     
-    def delete(self, id):      
+    def delete(id):      
         ref = db.reference("pilots")
         pilots = ref.get()
         for key, value in pilots.items():
@@ -41,7 +41,7 @@ class Pilots:
                 return True
         return False
 
-    def get_byFirstAndLastName(self, firstName, lastName):
+    def get_byFirstAndLastName(firstName, lastName):
         ref = db.reference("pilots")
         pilots = ref.get()
         for key, value in pilots.items():

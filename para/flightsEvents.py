@@ -4,7 +4,7 @@ class FlightEvents:
     def __init__(self) -> None:
         pass
         
-    def create(self, pilotId, locationId, timestamp, notes=""):
+    def create(pilotId, locationId, timestamp, notes=""):
         events_ref = db.reference('events')
 
         new_event_ref = events_ref.push({
@@ -16,7 +16,7 @@ class FlightEvents:
 
         return new_event_ref.key
 
-    def get(self, id):
+    def get(id):
         ref = db.reference("events")
         events = ref.get()
         for key, value in events.items():
@@ -25,7 +25,7 @@ class FlightEvents:
                 return value
         return None
     
-    def update(self, id, data={}):
+    def update(id, data={}):
         ref = db.reference("events")
         events = ref.get()
         for key, value in events.items():
@@ -34,7 +34,7 @@ class FlightEvents:
                 return True
         return False
 
-    def delete(self, id):      
+    def delete(id):      
         ref = db.reference("events")
         events = ref.get()
         for key, value in events.items():
