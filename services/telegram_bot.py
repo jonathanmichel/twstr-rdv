@@ -9,9 +9,9 @@ from telegram.update import Update
 from telegram.parsemode import ParseMode
 from telegram import error
 
-from status import Status
-from twstr_parser import TwstrParser
-from subscribers_handler import SubscribersHandler
+from twstr import Status
+from twstr import TwstrParser
+from twstr import SubscribersHandler
 
 
 log = logging.getLogger()

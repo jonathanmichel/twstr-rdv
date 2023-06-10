@@ -23,8 +23,7 @@ class Pushover:
                 "title": title,
                 "url": url,
                 "url_title": url_title
-            }), 
+            }),
             { "Content-type": "application/x-www-form-urlencoded" })
 
         self.conn.getresponse()
-

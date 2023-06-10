@@ -9,9 +9,10 @@ python = "^3.9"
 PyYAML = "^6.0"
 beautifulsoup4 = "^4.11.1"
 python-telegram-bot = "^13.11"
-"backports.zoneinfo" = "^0.2.1"
 markdownify = "^0.11.2"
 dateparser = "^1.1.1"
+firebase-admin = "^6.1.0"
+geopy = "^2.3.0"
 
 [tool.poetry.dev-dependencies]
 jupyter = "^1.0.0"

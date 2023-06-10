@@ -2,11 +2,11 @@ import json
 import logging
 from time import sleep
 
-from status import Status
-from pushover import Pushover
-from twstr_parser import TwstrParser
-from telegram_bot import TwstrTelegramBot
-from healthchecks import Healthchecks
+from twstr import Status
+from twstr import TwstrParser
+from services import Pushover
+from services import TwstrTelegramBot
+from services import Healthchecks
 
 if __name__ == "__main__" :
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
