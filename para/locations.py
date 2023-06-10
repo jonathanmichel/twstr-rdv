@@ -4,8 +4,8 @@ from enum import Enum
 
 class Locations:
     class LocationType(Enum):
-        TAKEOFF = 1
-        LANDING = 2
+        TAKEOFF = "Takeoff"
+        LANDING = "Landing"
 
     def __init__(self) -> None:
         pass
@@ -18,7 +18,7 @@ class Locations:
             'latitude': latitude,
             'longitude': longitude,
             'radius': radius,
-            'type': str(type),
+            'type': type.value,
             'description': description
         })
 
@@ -82,7 +82,7 @@ class Locations:
         ref = db.reference("locations")
         locations = ref.get()
         for key, value in locations.items():
-            distance = self.getDistanceBetweenTwoGPSPoints((value["latitude"], value["longitude"]), (latitude, longitude))
+            distance = Locations.getDistanceBetweenTwoGPSPoints((value["latitude"], value["longitude"]), (latitude, longitude))
             if (distance <= value["radius"]) :
                 return value
         return None
@@ -92,13 +92,14 @@ class Locations:
 
         return distance
     
-    def getAll(self):
+    def getAll():
         ref = db.reference("locations")
         locations = ref.get()
         return locations
     
-    def printAll(self):
-        locations_list = self.getAll()
+    def printAll():
+        locations_list = Locations.getAll()
         for locations_id in  locations_list:
             loc = locations_list[locations_id]
+            print(type(loc["type"]))
             print(f"{loc['type']} at {loc['name']} ({loc['latitude']}, {loc['longitude']}) - {loc['description']}")

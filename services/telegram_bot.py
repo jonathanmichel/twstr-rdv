@@ -14,6 +14,9 @@ from twstr import TwstrParser
 from twstr import SubscribersHandler
 
 from para import Pilots, Locations, Flights, FlightEvents
+import firebase_admin
+from datetime import datetime
+from firebase_admin import db, credentials
 
 log = logging.getLogger()
 
@@ -43,7 +46,8 @@ class TwstrTelegramBot:
             ("start", self.start_command_handler, "S'enregistrer en tant que pilote"),
             ("rendezvous", self.rendezvous_command_handler, "Afficher le dernier rendez-vous"),
             ("forecast", self.forecast_command_handler, "Afficher la dernière météo d'Antoine"),
-            ("addFlightEvent", self.addFlightEvent_command_handler, "Ajouter un événement de vol")
+            ("listflights", self.listFlights_command_handler, "Liste les vols"),
+            ("listlocations", self.listLocations_command_handler, "Lister les lieux de vol"),
         ]
 
         # Generate help commands list and add commands handlers
@@ -53,6 +57,14 @@ class TwstrTelegramBot:
             self.dispatcher.add_handler(CommandHandler(c[0], c[1]))
 
         self.bot.set_my_commands(my_commands)
+
+        firebase_db_url = "https://twstr-bot-default-rtdb.europe-west1.firebasedatabase.app/"
+        firebase_credentials = "twstr-bot-firebase-adminsdk.key.json"
+        
+        cred = credentials.Certificate(firebase_credentials)
+        firebase_admin.initialize_app(cred, {
+            'databaseURL': firebase_db_url
+            })
 
     def start_polling(self):
         self.updater.start_polling()
@@ -124,9 +136,52 @@ class TwstrTelegramBot:
         )
 
 
-    def addFlightEvent_command_handler(self, update: Update, context: CallbackContext):
-        pass
+    def listFlights_command_handler(self, update: Update, context: CallbackContext):
+        chat_id = update.effective_chat.id
+        response = ""
+
+        flights_events = Flights.getAllEventsForPilot(chat_id)
+
+        for event in flights_events:
+            loc = Locations.get(event["locationId"])
+
+            type = "❓"
+            if loc['type'] == Locations.LocationType.TAKEOFF.value:
+                type = "🛫"
+            elif loc['type'] == Locations.LocationType.LANDING.value:
+                type = "🛬"
+            
+            dt = datetime.fromtimestamp(event["timestamp"])
+
+            response += f"{type} at {loc['name']} on {dt} - {event['notes']}\n"
+
+        context.bot.send_message(
+            chat_id=chat_id, text=response,
+            parse_mode=ParseMode.HTML, disable_web_page_preview=False
+        )
+
+    def listLocations_command_handler(self, update: Update, context: CallbackContext):
+        response = ""
+        chat_id = update.effective_chat.id
+
+        locations_list = Locations.getAll()
+        for locations_id in  locations_list:
+            loc = locations_list[locations_id]
+            
+            googlemaps_url = f"https://www.google.com/maps/search/{loc['latitude']}, {loc['longitude']}"
+            location_link = f"<a href='{googlemaps_url}'>Map</a>"
+
+            type = "❓"
+            if loc['type'] == Locations.LocationType.TAKEOFF.value:
+                type = "🛫"
+            elif loc['type'] == Locations.LocationType.LANDING.value:
+                type = "🛬"
+
+            response += f"{type} <b>{loc['name']}</b> - <i>{loc['description']}</i>  {location_link}\n"
 
 
-
+        context.bot.send_message(
+            chat_id=chat_id, text=response,
+            parse_mode=ParseMode.HTML, disable_web_page_preview=False
+        )
 
