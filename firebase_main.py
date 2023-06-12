@@ -25,9 +25,9 @@ if __name__ == "__main__" :
    #  id = Locations.create(
    #     "Crêt-du-Midi, Sud", 46.2291281506, 7.52848488535, 28, Locations.LocationType.TAKEOFF, "Décollage Twist'Air"
    #  )
-   #  id = Locations.create(
-   #     "Crêt-du-Midi, Nord3", 46.2295200582, 7.52839678166, 20, Locations.LocationType.TAKEOFF, "Décollage Twist'Air"
-   #  )
+    id = Locations.create(
+       "Crêt-du-Midi, Nord", 46.2295200582, 7.52839678166, 20, Locations.LocationType.TAKEOFF, "Décollage Twist'Air"
+    )
 
     # Locations.update_byName(
     #     "Vercorin", {"type" : str(Locations.LocationType.TAKEOFF)}
@@ -35,19 +35,19 @@ if __name__ == "__main__" :
 
     # Locations.printAll()
 
-    chalais = Locations.get_byName("Chalais")
-    print(chalais)
+    # chalais = Locations.get_byName("Chalais")
+    # print(chalais)
 
-    vercorin = Locations.get_byName("Vercorin")
-    print(vercorin)
+    # vercorin = Locations.get_byName("Vercorin")
+    # print(vercorin)
 
-    res = Locations.get_byCoordinates(46.27172040675529, 7.513411380269101)
-    print(res)
+    # res = Locations.get_byCoordinates(46.27172040675529, 7.513411380269101)
+    # print(res)
 
-    timestamp = datetime.now().timestamp()
+    # timestamp = datetime.now().timestamp()
 
-    FlightEvents.create(648038516, vercorin["id"], timestamp)
-    FlightEvents.create(648038516, chalais["id"], timestamp + 900, "Vol mouvementé")
+    # FlightEvents.create(648038516, vercorin["id"], timestamp)
+    # FlightEvents.create(648038516, chalais["id"], timestamp + 900, "Vol mouvementé")
 
     # jonathan = Pilots.get_byFirstAndLastName("Jonathan", "Michel")
     # print(jonathan)

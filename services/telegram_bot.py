@@ -3,11 +3,9 @@ import json
 import logging
 import traceback
 
-from telegram.bot import Bot, BotCommand
-from telegram.ext import Updater, CommandHandler, CallbackContext
-from telegram.update import Update
-from telegram.parsemode import ParseMode
-from telegram import error
+from telegram.ext import Application, Updater, CommandHandler, CallbackContext, CallbackQueryHandler, ContextTypes
+from telegram import error, InlineKeyboardButton, InlineKeyboardMarkup, Bot, BotCommand, Update
+from telegram.constants import ParseMode
 
 from twstr import Status
 from twstr import TwstrParser
@@ -23,23 +21,28 @@ log = logging.getLogger()
 
 class TwstrTelegramBot:
     def __init__(self, token, status: Status, twstr: TwstrParser, dev_id=""):
-        self.updater = Updater(token, use_context=True)
-        self.dispatcher = self.updater.dispatcher
-        self.dispatcher.error_handlers
         self.status = status
         self.twstr = twstr
         self.dev_id = dev_id
+        self.token = token
+        self.dev_id = dev_id
 
-        self.bot = Bot(token=token)
+    async def create(self):
+        self.application = Application.builder().token(self.token).build()
+        self.bot = self.application.bot
 
-        self.subscribers = SubscribersHandler([dev_id])
+        self.updater = Updater(bot=self.bot, update_queue=None)
+        
+        await self.updater.initialize()
+
+        self.subscribers = SubscribersHandler([self.dev_id])
 
         # Add "Les parapenteur" group in diffusion list
         # self.subscribers.add(-654440852)
 
         # Add error handler
-        self.dispatcher.add_error_handler(self.error_handler)
-
+        self.application.add_error_handler(self.error_handler)
+        
         # Available commands
         # ("command", handler, "description")
         commands = [
@@ -54,9 +57,11 @@ class TwstrTelegramBot:
         my_commands = []
         for c in commands:
             my_commands.append(BotCommand(c[0], c[2]))
-            self.dispatcher.add_handler(CommandHandler(c[0], c[1]))
+            self.application.add_handler(CommandHandler(c[0], c[1]))
 
-        self.bot.set_my_commands(my_commands)
+        await self.bot.set_my_commands(my_commands)
+
+        self.application.add_handler(CallbackQueryHandler(self.button))
 
         firebase_db_url = "https://twstr-bot-default-rtdb.europe-west1.firebasedatabase.app/"
         firebase_credentials = "twstr-bot-firebase-adminsdk.key.json"
@@ -65,9 +70,12 @@ class TwstrTelegramBot:
         firebase_admin.initialize_app(cred, {
             'databaseURL': firebase_db_url
             })
+        
+        print("Bot created")
 
-    def start_polling(self):
-        self.updater.start_polling()
+    async def start_polling(self):
+        self.application.run_polling()
+        print("Polling...")
 
     def broadcast_message(self, message, **kwargs):
         for sub in self.subscribers.get():
@@ -104,20 +112,38 @@ class TwstrTelegramBot:
 
         self.send_to_dev(message)
 
-    def start_command_handler(self, update: Update, context: CallbackContext):
-        chat_id = update.effective_chat.id
+    async def start_command_handler(self, update: Update, context: CallbackContext):
+        # chat_id = update.effective_chat.id
 
 
-        if chat_id > 0:
-            context.bot.send_message(chat_id=chat_id, text=f"Hey {update.effective_chat.first_name}, c'est Twist'Hervé! Bon vol 🪂")
-            self.send_to_dev(f"User {update.effective_chat.first_name} (@{update.effective_chat.username}, #{update.effective_chat.id}) added to diffusion list")
-        else:
-            context.bot.send_message(chat_id=chat_id, text=f"Hey c'est Twist'Hervé! Merci {update.effective_user.first_name} de m'avoir ajouté au groupe. Bon vol 🪂")
-            self.send_to_dev(f"Group {update.effective_chat.title} #{update.effective_chat.id} added to diffusion list by {update.effective_user.first_name} (@{update.effective_user.username}, #{update.effective_user.id})")
+        # if chat_id > 0:
+        #     context.bot.send_message(chat_id=chat_id, text=f"Hey {update.effective_chat.first_name}, c'est Twist'Hervé! Bon vol 🪂")
+        #     self.send_to_dev(f"User {update.effective_chat.first_name} (@{update.effective_chat.username}, #{update.effective_chat.id}) added to diffusion list")
+        # else:
+        #     context.bot.send_message(chat_id=chat_id, text=f"Hey c'est Twist'Hervé! Merci {update.effective_user.first_name} de m'avoir ajouté au groupe. Bon vol 🪂")
+        #     self.send_to_dev(f"Group {update.effective_chat.title} #{update.effective_chat.id} added to diffusion list by {update.effective_user.first_name} (@{update.effective_user.username}, #{update.effective_user.id})")
 
-        self.subscribers.add(chat_id)
+        # self.subscribers.add(chat_id)
 
-    def forecast_command_handler(self, update: Update, context: CallbackContext):
+        keyboard = [
+            [InlineKeyboardButton("🪂 Enregister un déco/atterro", callback_data="3")],
+            [
+                InlineKeyboardButton("💾 Enregister un vol", callback_data="3"),
+                InlineKeyboardButton("📜 Afficher tes vol", callback_data="3"),
+            ],
+            [InlineKeyboardButton("🗺️ Afficher les sites de vol", callback_data="3")],
+            [
+                InlineKeyboardButton("📟 Twist'Air\nrendez-vous", callback_data="/rendezvous"),
+                InlineKeyboardButton("🌤️ Twist'Air\nbulletin météo", callback_data="/forecast"),
+            ],
+
+        ]
+
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        update.message.reply_text("Que veux-tu faires ?", reply_markup=reply_markup)
+
+    async def forecast_command_handler(self, update: Update, context: CallbackContext):
         chat_id = update.effective_chat.id
 
         forecast = self.status.get_saved_forecast()
@@ -126,7 +152,7 @@ class TwstrTelegramBot:
             parse_mode=ParseMode.HTML, disable_web_page_preview=True
         )
 
-    def rendezvous_command_handler(self, update: Update, context: CallbackContext):
+    async def rendezvous_command_handler(self, update: Update, context: CallbackContext):
         chat_id = update.effective_chat.id
 
         rendezvous = self.status.get_saved_rendezvous()
@@ -136,7 +162,7 @@ class TwstrTelegramBot:
         )
 
 
-    def listFlights_command_handler(self, update: Update, context: CallbackContext):
+    async def listFlights_command_handler(self, update: Update, context: CallbackContext):
         chat_id = update.effective_chat.id
         response = ""
 
@@ -155,12 +181,20 @@ class TwstrTelegramBot:
 
             response += f"{type} at {loc['name']} on {dt} - {event['notes']}\n"
 
+        keyboard = [[InlineKeyboardButton("Hackerearth", callback_data='HElist8'),
+                         InlineKeyboardButton("Hackerrank", callback_data='HRlist8')],
+                        [InlineKeyboardButton("Codechef", callback_data='CClist8'),
+                         InlineKeyboardButton("Spoj", callback_data='SPlist8')],
+                        [InlineKeyboardButton("Codeforces", callback_data='CFlist8'),
+                         InlineKeyboardButton("ALL", callback_data='ALLlist8')]]
+
         context.bot.send_message(
             chat_id=chat_id, text=response,
             parse_mode=ParseMode.HTML, disable_web_page_preview=False
         )
 
-    def listLocations_command_handler(self, update: Update, context: CallbackContext):
+
+    async def listLocations_command_handler(self, update: Update, context: CallbackContext):
         response = ""
         chat_id = update.effective_chat.id
 
@@ -184,4 +218,17 @@ class TwstrTelegramBot:
             chat_id=chat_id, text=response,
             parse_mode=ParseMode.HTML, disable_web_page_preview=False
         )
+
+    async def button(self, update: Update, context: None) -> None:
+        """Parses the CallbackQuery and updates the message text."""
+        query = update.callback_query
+
+        # CallbackQueries need to be answered, even if no notification to the user is needed
+        # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
+        query.answer()
+
+        return query.edit_message_text(text=f"Selected option: {query.data}")
+
+
+
 

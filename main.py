@@ -1,6 +1,7 @@
 import json
 import logging
 from time import sleep
+import asyncio
 
 from twstr import Status
 from twstr import TwstrParser
@@ -8,7 +9,7 @@ from services import Pushover
 from services import TwstrTelegramBot
 from services import Healthchecks
 
-if __name__ == "__main__" :
+async def main():
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         level=logging.INFO)
     log = logging.getLogger()
@@ -39,7 +40,12 @@ if __name__ == "__main__" :
         credentials["telegram_dev_ids"]
     )
 
-    telegram.start_polling()
+    await telegram.create()
+
+    await telegram.start_polling()
+
+    while True:
+        continue
 
     while True:
         healthchecks.start()
@@ -107,3 +113,6 @@ if __name__ == "__main__" :
 
         # Try next time
         sleep(15 * 60) # 15 minutes
+
+if __name__ == "__main__" :
+    asyncio.run(main())
