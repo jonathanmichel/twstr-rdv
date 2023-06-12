@@ -175,7 +175,7 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 def main() -> None:
     """Run the bot."""
     # Create the Application and pass it your bot's token.
-    application = Application.builder().token("5346766079:AAF02CH2-pzhfUoof0DztTgNM00RP-pvQ_s").build()
+    application = Application.builder().token("TOKEN").build()
 
     # Setup conversation handler with the states FIRST and SECOND
     # Use the pattern parameter to pass CallbackQueries with specific
