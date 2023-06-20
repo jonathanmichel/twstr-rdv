@@ -15,6 +15,7 @@ Send /start to initiate the conversation.
 Press Ctrl-C on the command line to stop the bot.
 """
 import logging
+import json
 
 from telegram import __version__ as TG_VER
 
@@ -175,8 +176,11 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 def main() -> None:
     """Run the bot."""
     # Create the Application and pass it your bot's token.
-    application = Application.builder().token("TOKEN").build()
+    # Create the Application and pass it your bot's token.
+    with open(r'../credentials.json') as file:
+        credentials_file = json.load(file)
 
+    application = Application.builder().token(credentials_file["telegram_token"]).build()
     # Setup conversation handler with the states FIRST and SECOND
     # Use the pattern parameter to pass CallbackQueries with specific
     # data pattern to the corresponding handlers.
