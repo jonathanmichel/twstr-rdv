@@ -89,7 +89,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = InlineKeyboardMarkup(buttons)
 
     text = "Que veux-tu faire ?"
-    if context.user_data:
+    if context.user_data.get("identified"):
         # Back to start menus - No need to send a new message
         await update.callback_query.answer()
         await update.callback_query.edit_message_text(text=text, reply_markup=keyboard)
@@ -98,12 +98,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Salut, je suis Twist'Hervé, le bot de Twist'Air !")
         await update.message.reply_text(text=text, reply_markup=keyboard)
         # Usefull only here but has to be improved
-        context.user_data["identied"] = True
+        context.user_data["identified"] = True
     
     # await update.callback_query.answer()
     # await update.message.reply_text("Que veux-tu faires ?", reply_markup=reply_markup)
 
     return MAIN_MENU
+
+async def reset(update: Update, context: CallbackContext):
+    context.user_data["identified"] = False
+    
 
 async def clickAndFly(update: Update, context: CallbackContext):
     user_data = context.user_data
@@ -256,16 +260,17 @@ if __name__ == "__main__" :
     bot = application.bot
 
     # Add error handler
-    # application.add_error_handler(error_handler)
+    application.add_error_handler(error_handler)
     
-    # # Available commands
-    # # ("command", handler, "description")
+    # Available commands
+    # ("command", handler, "description")
     # commands = [
     #     ("start", start, "S'enregistrer en tant que pilote"),
     #     ("rendezvous", rendezvous_command_handler, "Afficher le dernier rendez-vous"),
     #     ("forecast", forecast_command_handler, "Afficher la dernière météo d'Antoine"),
     #     ("listflights", listFlights, "Liste les vols"),
     #     ("listlocations", listLocations, "Lister les lieux de vol"),
+    #     ("reset", reset, "Reset data (temp)"),
     # ]
 
     # # Generate help commands list and add commands handlers
