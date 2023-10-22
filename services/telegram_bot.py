@@ -36,6 +36,8 @@ class TwstrTelegramBot:
 
         # Add "Les parapenteur" group in diffusion list
         # self.subscribers.add(-654440852)
+	# Add Loïc F. in diffusion list
+        self.subscribers.add(230034740)
 
         # Add error handler
         self.dispatcher.add_error_handler(self.error_handler)
